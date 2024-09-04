@@ -7,38 +7,48 @@ function App() {
   // Declare a new state variable called "name"
   const [name, setName] = useState('Adam');
   const [submittedName, setSubmittedName] = useState('');
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
 
 
   // Handle user input
-  function handleInputChange(event) {
+  const handleInputChange = (event) => {
     setName(event.target.value);
   }
 
   // Handle form submission
-  function handleSubmit(event) {
-    event.preventDefault(); // Prevent the page from refreshing
+  const handleSubmit = (event) => {
+    event.preventDefault();
     setSubmittedName(name);
+    setIsLoggedIn(true);
   }
+
+  const handleLogout = () => {
+    setSubmittedName('');  // Clear submitted name
+    setIsLoggedIn(false);  // Set user as logged out
+  };
 
   return (
     <div className="App">
       <header className="App-header">
         <h1>Welcome to My First React App!</h1>
-        <p>This is my first React component.</p>
-        <Welcome name={submittedName || 'Guest'} /> {/* Add a Welcome component */}
-        {/* <input type="text" value={name} onChange={handleInputChange} placeholder='Enter your name' /> */}
-        {/* <button onClick={() => setName('Tunde')}>Change Name</button> */}
-        <form onSubmit={handleSubmit}>
-          <input
-            type="text"
-            value={name}
-            onChange={handleInputChange}
-            placeholder="Enter your name"
-          />
-          <button type="submit">Submit</button>
-        </form>
-        {submittedName && <p>Thank you, {submittedName}!</p>}  {/* Display a thank you message */}
-
+        {isLoggedIn ? (
+          <>
+            <Welcome name={submittedName} />
+            <button onClick={handleLogout}>Logout</button>
+            <p>Thank you, {submittedName}!</p>
+          </>
+        ) : (
+          <form onSubmit={handleSubmit}>
+            <input
+              type="text"
+              value={name}
+              onChange={handleInputChange}
+              placeholder="Enter your name"
+            />
+            <button type="submit">Login</button>
+          </form>
+        )}
       </header>
     </div>
   );
