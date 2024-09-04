@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import './App.css';
 import Welcome from './Welcome';
+import UserInfo from './UserInfo';
 
 
 function App() {
@@ -35,6 +36,12 @@ function App() {
     setIsLoggedIn(false);  // Set user as logged out
   };
 
+  const user = {
+    name: submittedName,
+    email: 'user@example.com',
+    age: 30,
+  };
+
   return (
     <div className="App">
       <header className="App-header">
@@ -42,6 +49,7 @@ function App() {
         {isLoggedIn ? (
           <>
             <Welcome name={submittedName} />
+            <UserInfo name={user.name} email={user.email} age={user.age} />
             <button onClick={handleLogout}>Logout</button>
             <p>Thank you, {submittedName}!</p>
             <h2>User List:</h2>
