@@ -10,6 +10,13 @@ function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
 
+  const users = [
+    {id: 1, name: 'Adam'},
+    {id: 2, name: 'Sodiq'},
+    {id: 3, name: 'Ilyas'},
+    {id: 4, name: 'Abdulrahman'},
+    {id: 5, name: 'Hassan'},
+  ]
 
   // Handle user input
   const handleInputChange = (event) => {
@@ -37,6 +44,12 @@ function App() {
             <Welcome name={submittedName} />
             <button onClick={handleLogout}>Logout</button>
             <p>Thank you, {submittedName}!</p>
+            <h2>User List:</h2>
+            <ul>
+              {users.map(user => (
+                <li key={user.id}>{user.name}</li>
+              ))}
+            </ul>
           </>
         ) : (
           <form onSubmit={handleSubmit}>
