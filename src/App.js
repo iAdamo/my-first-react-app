@@ -10,7 +10,8 @@ function App() {
   const [submittedName, setSubmittedName] = useState('');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [users, setUsers] = useState([]);
-
+  const [loading, setLoading] = useState(true); // Add loading state
+  const [error, setError] = useState(null); // Add error state
 
   // Handle user input
   const handleInputChange = (event) => {
@@ -37,12 +38,22 @@ function App() {
 
   // fetch data
   useEffect(() => {
-    fetch('https://jsonplaceholder.typicode.com/users')
-      .then(response => response.json())
-      .then(data => setUsers(data))
-      .catch(error => console.log(error));
-    }, []
-  );
+    const fetchUsers = async () => {
+      try {
+        const response = await fetch('https://jsonplaceholder.typicode.com/users');
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+          }
+        const data = await response.json();
+        setUsers(data);
+        setLoading(false);
+      } catch (error) {
+        setError(error.message);
+        setLoading(false);
+      }
+    };
+    fetchUsers();
+  }, []); // Run once when the component mounts
 
   return (
     <div className="App">
@@ -55,11 +66,19 @@ function App() {
             <button onClick={handleLogout}>Logout</button>
             <p>Thank you, {submittedName}!</p>
             <h2>User List:</h2>
-            <ul>
-              {users.map(user => (
-                <li key={user.id}>{user.name}</li>
-              ))}
-            </ul>
+            {loading ? (
+              <p>Loading users...</p>
+            ) : error ? (
+              <p>Error: {error}</p>
+            ) : (
+              <ul>
+                {users.map(user => (
+                  <li key={user.id}>
+                    {user.name} - {user.email}
+                  </li>
+                ))}
+              </ul>
+            )}
           </>
         ) : (
           <form onSubmit={handleSubmit}>
