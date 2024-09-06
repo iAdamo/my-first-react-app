@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './App.css';
 import Welcome from './Welcome';
 import UserInfo from './UserInfo';
@@ -9,15 +9,8 @@ function App() {
   const [name, setName] = useState('Adam');
   const [submittedName, setSubmittedName] = useState('');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [users, setUsers] = useState([]);
 
-
-  const users = [
-    {id: 1, name: 'Adam'},
-    {id: 2, name: 'Sodiq'},
-    {id: 3, name: 'Ilyas'},
-    {id: 4, name: 'Abdulrahman'},
-    {id: 5, name: 'Hassan'},
-  ]
 
   // Handle user input
   const handleInputChange = (event) => {
@@ -41,6 +34,15 @@ function App() {
     email: 'user@example.com',
     age: 30,
   };
+
+  // fetch data
+  useEffect(() => {
+    fetch('https://jsonplaceholder.typicode.com/users')
+      .then(response => response.json())
+      .then(data => setUsers(data))
+      .catch(error => console.log(error));
+    }, []
+  );
 
   return (
     <div className="App">
