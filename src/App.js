@@ -10,6 +10,7 @@ function App() {
   const [submittedName, setSubmittedName] = useState('');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [users, setUsers] = useState([]);
+  const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true); // Add loading state
   const [error, setError] = useState(null); // Add error state
 
@@ -38,22 +39,36 @@ function App() {
 
   // fetch data
   useEffect(() => {
-    const fetchUsers = async () => {
+    const fetchData = async () => {
       try {
-        const response = await fetch('https://jsonplaceholder.typicode.com/users');
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-          }
-        const data = await response.json();
-        setUsers(data);
+        const [usersResponse, postsResponse] = await Promise.all([
+          fetch('https://jsonplaceholder.typicode.com/users'),
+          fetch('https://jsonplaceholder.typicode.com/posts'),
+        ]);
+
+        if (!usersResponse.ok || !postsResponse.ok) {
+          throw new Error('Failed to fetch data');
+        }
+
+        const usersData = await usersResponse.json();
+        const postsData = await postsResponse.json();
+
+        setUsers(usersData);
+        setPosts(postsData);
         setLoading(false);
       } catch (error) {
         setError(error.message);
         setLoading(false);
       }
     };
-    fetchUsers();
-  }, []); // Run once when the component mounts
+
+    fetchData();
+  }, []);
+
+  const getPostsByUserId = (userId) => {
+    return posts.filter(post => post.userId === userId);
+  }
+
 
   return (
     <div className="App">
@@ -65,7 +80,7 @@ function App() {
             <UserInfo name={user.name} email={user.email} age={user.age} />
             <button onClick={handleLogout}>Logout</button>
             <p>Thank you, {submittedName}!</p>
-            <h2>User List:</h2>
+            <h2>Users:</h2>
             {loading ? (
               <p>Loading users...</p>
             ) : error ? (
@@ -74,7 +89,30 @@ function App() {
               <ul>
                 {users.map(user => (
                   <li key={user.id}>
-                    {user.name} - {user.email}
+                    <p>{user.name} - {user.email}</p>
+                    <ul>
+                      {getPostsByUserId(user.id).map(post => (
+                        <li key={post.id}>
+                          <h3>{post.title}</h3>
+                          <p>{post.body}</p>
+                        </li>
+                      ))}
+                    </ul>
+                  </li>
+                ))}
+              </ul>
+            )}
+            <h2>Posts List:</h2>
+            {loading ? (
+              <p>Loading posts...</p>
+            ) : error ? (
+              <p>Error: {error}</p>
+            ) : (
+              <ul>
+                {posts.map(post => (
+                  <li key={post.id}>
+                    <h3>{post.title}</h3>
+                    <p>{post.body}</p>
                   </li>
                 ))}
               </ul>
